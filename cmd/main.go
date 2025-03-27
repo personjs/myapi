@@ -4,8 +4,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	"net/http"
 	"personjs/myapi/config"
 	"personjs/myapi/routes"
 )
@@ -31,5 +29,5 @@ func main() {
 
 	// Start server
 	fmt.Println("Server running on", address)
-	log.Fatal(http.ListenAndServe(address, r))
+	r.Run(address)
 }

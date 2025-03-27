@@ -5,18 +5,25 @@ import (
 	"personjs/myapi/internal/handlers"
 	"personjs/myapi/pkg/middleware"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter() *mux.Router {
-	r := mux.NewRouter()
+func SetupRouter() *gin.Engine {
+	r := gin.New()
 
-	// Apply AuthMiddleware globally to all routes
-	r.Use(middleware.AuthMiddleware)
+	// Manually add Logger and Recovery if needed
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
-	// Define routes
-	r.HandleFunc("/health", handlers.HealthCheck).Methods("GET")
-	r.HandleFunc("/user", handlers.GetUser).Methods("GET")
+	// Public route
+	public := r.Group("/")
+	public.GET("/", handlers.HomeHandler)
+	public.GET("/health", handlers.HealthHandler)
+
+	// Protected routes group
+	protected := r.Group("/")
+	protected.Use(middleware.AuthMiddleware)
+	protected.GET("/protected", handlers.ProtectedHandler)
 
 	return r
 }
